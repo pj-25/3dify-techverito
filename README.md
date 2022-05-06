@@ -1,2 +1,11 @@
-# 3dify-techverito
-3dify the existing techverito's official website
+# 🤖 [graphicsAI](https://pj-25.github.io/graphicsAI/)
+AI powered realtime graphics web application
+
+[Editor](https://pj-25.github.io/graphicsAI/dist/)
+
+### 🏗️ Get Started 
+ ```
+ npm install
+ npm run build
+ npm run dev
+ ```
