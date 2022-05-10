@@ -21,8 +21,8 @@ export default class ObjectGenerator {
         OBJ: 10
     };
 
-    constructor(viewport, cursorPoint = new THREE.Vector3(0, 0, 0)) {
-        this.viewport = viewport;
+    constructor(parent, cursorPoint = new THREE.Vector3(0, 0, 0)) {
+        this.parent = parent;
         this.cursorPoint = cursorPoint;
 
         this.loadingManager = new THREE.LoadingManager();
@@ -33,7 +33,7 @@ export default class ObjectGenerator {
 
     addPlane() {
         let object = this.createPlane();
-        this.viewport.add(object);
+        this.parent.add(object);
         return object;
     }
 
@@ -47,7 +47,7 @@ export default class ObjectGenerator {
 
     addCube() {
         let object = this.createCube();
-        this.viewport.add(object);
+        this.parent.add(object);
         return object;
     }
 
@@ -61,7 +61,7 @@ export default class ObjectGenerator {
 
     addCircle() {
         let object = this.createCircle();
-        this.viewport.add(object);
+        this.parent.add(object);
         return object;
     }
 
@@ -75,7 +75,7 @@ export default class ObjectGenerator {
 
     addUVSphere() {
         let object = this.createUVSphere();
-        this.viewport.add(object);
+        this.parent.add(object);
         return object;
     }
 
@@ -89,7 +89,7 @@ export default class ObjectGenerator {
 
     addIcoSphere() {
         let object = this.createIcoSphere();
-        this.viewport.add(object);
+        this.parent.add(object);
         return object;
     }
 
@@ -103,7 +103,7 @@ export default class ObjectGenerator {
 
     addCylinder() {
         let object = this.createCylinder();
-        this.viewport.add(object);
+        this.parent.add(object);
         return object;
     }
 
@@ -117,7 +117,7 @@ export default class ObjectGenerator {
 
     addCone() {
         let object = this.createCone();
-        this.viewport.add(object);
+        this.parent.add(object);
         return object;
     }
 
@@ -131,7 +131,7 @@ export default class ObjectGenerator {
 
     addTorus() {
         let object = this.createTorus();
-        this.viewport.add(object);
+        this.parent.add(object);
         return object;
     }
 
@@ -165,7 +165,7 @@ export default class ObjectGenerator {
             fontPath,
             (font) => {
                 let textObj = this.createText(text, { font, ...textGeometryOptions });
-                this.viewport.add(textObj);
+                this.parent.add(textObj);
                 onAfterAdd(textObj);
             }
         );
@@ -173,7 +173,7 @@ export default class ObjectGenerator {
 
     addCamera() {
         let object = this.createCamera();
-        this.viewport.add(object);
+        this.parent.add(object);
         return object;
     }
 
@@ -185,19 +185,19 @@ export default class ObjectGenerator {
 
     addAmbientLight() {
         let object = this.createAmbientLight();
-        this.viewport.add(object);
+        this.parent.add(object);
         return object;
     }
 
     addLight(createLight) {
         let object = createLight.call(this,);
-        this.viewport.add(object);
+        this.parent.add(object);
         return object;
     }
 
     parseAndAddObj(objectData) {
         let object = this.objLoader.parse(objectData);
-        this.viewport.add(object);
+        this.parent.add(object);
     }
 
     addObj(objFile, onAfterAdd) {
@@ -205,7 +205,7 @@ export default class ObjectGenerator {
             objFile,
             (object) => {
 
-                this.viewport.add(object);
+                this.parent.add(object);
                 onAfterAdd(object);
             },
             (xhr) => {

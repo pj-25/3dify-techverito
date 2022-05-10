@@ -1,7 +1,6 @@
 import ObjectGenerator from "../utils/ObjectGenerator";
 import Viewport from "../viewport/Viewport";
-import { AmbientLight, DirectionalLight, Vector3, TextureLoader } from "three";
-import { Group } from "three";
+import { AmbientLight, DirectionalLight, Vector3, TextureLoader, Group } from "three";
 
 export default class HomeScene extends Viewport {
     constructor(viewportCanvas, radius = 10) {
@@ -13,7 +12,7 @@ export default class HomeScene extends Viewport {
         this.radius = radius;
         this.hideHelpers();
 
-        setInterval(this.animation.bind(this), 1000);
+        setInterval(this.animation.bind(this), 100);
 
         const loader = new TextureLoader();
         loader.load('images/big-retro-world.jpeg', (texture) => {
@@ -31,18 +30,6 @@ export default class HomeScene extends Viewport {
 
 
     addTechVeritoModel() {
-        this.objectGenerator.addText('TechVerito', (textObject) => {
-            textObject
-        }, {
-            size: 2,
-            height: 1,
-            curveSegments: 6,
-            bevelEnabled: true,
-            bevelThickness: 0.03,
-            bevelSize: 0.02,
-            bevelOffset: 0,
-            bevelSegments: 4
-        });
         let services = ['Web Development',
             'Mobile Application Development',
             'Continuous Delivery',
@@ -60,12 +47,32 @@ export default class HomeScene extends Viewport {
             'Docker',
             'Kubernetes'
         ];
+        this.objectGenerator.addText('TechVerito', (textObject) => {
+            this.loadAtom(services);
+        }, {
+            size: 2,
+            height: 1,
+            curveSegments: 6,
+            bevelEnabled: true,
+            bevelThickness: 0.03,
+            bevelSize: 0.02,
+            bevelOffset: 0,
+            bevelSegments: 4
+        });
+    }
+
+    loadAtom(services) {
+        this.atom = new Group();
+        this.objectGenerator.parent = this.atom;
         for (let name of services) {
             this.objectGenerator.addText(name, (textObject) => {
                 textObject.position.copy(HomeScene.createNewSphereCoordinates(this.radius));
                 this.textObjects.push(textObject);
+                if (name == services[-1])
+                    this.objectGenerator.parent = this;
             });
         }
+        this.add(this.atom);
     }
 
     static createNewSphereCoordinates(radius) {
@@ -78,9 +85,12 @@ export default class HomeScene extends Viewport {
     }
 
     animation() {
-        console.log(this.textObjects);
-        for (let textObject of this.textObjects) {
-            textObject.position.copy(HomeScene.createNewSphereCoordinates(this.radius));
+        // for (let textObject of this.textObjects) {
+        //     textObject.position.copy(HomeScene.createNewSphereCoordinates(this.radius));
+        // }
+        this.atom.rotation.y -= 0.05;
+        for (let service of this.atom.children) {
+            service.lookAt(new Vector3(0, 0, 100))
         }
     }
 }
