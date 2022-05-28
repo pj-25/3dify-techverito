@@ -3,7 +3,7 @@ import ControlledCamera from './ControlledCamera';
 
 export default class Viewport extends THREE.Scene {
 
-    constructor(domElement, width = window.innerWidth, height = window.innerHeight, cameraPosition = [1, 2, 3], clearColor = 0x3a3a3a, needHelper = true) {
+    constructor(domElement, width = window.innerWidth, height = window.innerHeight, cameraPosition = [0, 0, 6], clearColor = 0x3a3a3a) {
         super();
 
         this.mouse = {
@@ -59,8 +59,7 @@ export default class Viewport extends THREE.Scene {
         const negativeAxes = new THREE.AxesHelper(-100);
         this.helper.axesGroup.add(negativeAxes);
         this.helper.group.add(this.helper.axesGroup);
-        if (needHelper)
-            this.add(this.helper.group);
+        this.add(this.helper.group);
 
         //create raycaster
         this.raycaster = new THREE.Raycaster();
@@ -88,11 +87,6 @@ export default class Viewport extends THREE.Scene {
         this.disableOrbitControls = (event) => {
             this.controlledCamera.orbitControls.enabled = false;
         };
-
-    }
-
-    //override this method to perform actions at each render loop
-    onEachRender() {
 
     }
 

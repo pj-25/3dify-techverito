@@ -1,8 +1,29 @@
-import ObjectGenerator from "../utils/ObjectGenerator";
+import ObjectGenerator from "../viewport/utils/ObjectGenerator";
 import Viewport from "../viewport/Viewport";
-import { AmbientLight, DirectionalLight, Vector3, TextureLoader, Group } from "three";
+import { AmbientLight, DirectionalLight, Vector3, Group } from "three";
+import AssetsManager from "../viewport/utils/AssetsManager";
+import * as THREE from 'three';
 
 export default class HomeScene extends Viewport {
+
+    static services = ['Web Development',
+        'Mobile Application Development',
+        'Continuous Delivery',
+        'Continuous integration',
+        'DevOps',
+        'Agile',
+        'Ruby On Rails',
+        'Golang',
+        'Java',
+        'Angular',
+        'React',
+        'Vue',
+        'Ionic',
+        'CHEF',
+        'Docker',
+        'Kubernetes'
+    ];
+
     constructor(viewportCanvas, radius = 10) {
         super(viewportCanvas);
 
@@ -14,42 +35,34 @@ export default class HomeScene extends Viewport {
 
         setInterval(this.animation.bind(this), 100);
 
-        const loader = new TextureLoader();
-        loader.load('images/big-retro-world.jpeg', (texture) => {
+        this.objectGenerator.assetsManager.textureLoader.load('images/big-retro-world.jpeg', (texture) => {
             this.background = texture;
         });
     }
 
     initObjects() {
-        this.add(new AmbientLight(0x00badb, 0.5));
-        let directionalLight = new DirectionalLight(0x00badb, 0.5);
-        directionalLight.position.copy(new Vector3(5, 10, 15));
-        this.add(directionalLight);
+        this.add(new AmbientLight(0x49e3f6, 0.5));
+        let backDirectionalLight = new DirectionalLight(0xf204f5, 1.0);
+        backDirectionalLight.position.copy(new Vector3(0, 50, -50));
+        this.add(backDirectionalLight);
+
+        let upDirectionalLight = new DirectionalLight(0x0c36ca, 0.5);
+        upDirectionalLight.position.copy(new Vector3(0, 50, 100));
+        this.add(upDirectionalLight);
         this.addTechVeritoModel();
     }
 
 
     addTechVeritoModel() {
-        let services = ['Web Development',
-            'Mobile Application Development',
-            'Continuous Delivery',
-            'Continuous integration',
-            'DevOps',
-            'Agile',
-            'Ruby On Rails',
-            'Golang',
-            'Java',
-            'Angular',
-            'React',
-            'Vue',
-            'Ionic',
-            'CHEF',
-            'Docker',
-            'Kubernetes'
-        ];
+        let normalMaterial = this.objectGenerator.assetsManager.createNewMaterial(AssetsManager.MATERIAL_TYPE.MESH_NORMAL_MATERIAL);
+        this.atom = new Group();
+        this.add(this.atom);
+        this.objectGenerator.parent = this.atom;
         this.objectGenerator.addText('TechVerito', (textObject) => {
-            this.loadAtom(services);
-        }, {
+            this.nucleous = textObject;
+            this.objectGenerator.parent = this;
+            this.loadElectrons(HomeScene.services);
+        }, normalMaterial, {
             size: 2,
             height: 1,
             curveSegments: 6,
@@ -61,18 +74,24 @@ export default class HomeScene extends Viewport {
         });
     }
 
-    loadAtom(services) {
-        this.atom = new Group();
-        this.objectGenerator.parent = this.atom;
+    loadElectrons(services) {
+        let particleGeometry = new THREE.SphereGeometry(this.radius, 30, 30);
+        let particleMaterial = new THREE.PointsMaterial({ size: 0.1, sizeAttenuation: true });
+        this.electrons = new THREE.Points(particleGeometry, particleMaterial);
+        this.atom.add(this.electrons);
+        this.objectGenerator.parent = this.electrons;
+        this.objectGenerator.setSharedMaterial(this.nucleous.material);
         for (let name of services) {
             this.objectGenerator.addText(name, (textObject) => {
                 textObject.position.copy(HomeScene.createNewSphereCoordinates(this.radius));
                 this.textObjects.push(textObject);
-                if (name == services[-1])
+                // textObject.material.wireframe = true;
+                if (name == HomeScene.services[-1]) {
                     this.objectGenerator.parent = this;
+                    this.objectGenerator.unsetSharedMaterial();
+                }
             });
         }
-        this.add(this.atom);
     }
 
     static createNewSphereCoordinates(radius) {
@@ -85,12 +104,13 @@ export default class HomeScene extends Viewport {
     }
 
     animation() {
-        // for (let textObject of this.textObjects) {
-        //     textObject.position.copy(HomeScene.createNewSphereCoordinates(this.radius));
-        // }
-        this.atom.rotation.y -= 0.05;
-        for (let service of this.atom.children) {
-            service.lookAt(new Vector3(0, 0, 100))
+        this.electrons.rotation.y -= 0.05;
+        // if (this.atom.position.z == -50)
+        //     this.atom.position.z = 10;
+        // this.atom.position.z -= 0.5
+        // this.atom.lookAt(this.controlledCamera.activeCamera.position)
+        for (let electron of this.electrons.children) {
+            electron.lookAt(this.controlledCamera.activeCamera.position)
         }
     }
 }
